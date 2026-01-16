@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # -------------------- SAFE FILE LOADING --------------------
-if not os.path.exists("model.pkl"):
+if not os.path.exists("model (5).pkl"):
     st.error("❌ model.pkl not found. Upload it to the GitHub repository.")
     st.stop()
 
