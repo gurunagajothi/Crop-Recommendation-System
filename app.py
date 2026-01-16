@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # -------------------- Load Model & Scaler --------------------
-model = pickle.load(open("model.pkl", "rb"))
+model = pickle.load(open("model (5).pkl", "rb"))
 scaler = pickle.load(open("minmaxscaler.pkl", "rb"))  # change if needed
 
 # -------------------- Crop Label Mapping --------------------
