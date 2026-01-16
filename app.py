@@ -2,21 +2,22 @@ import streamlit as st
 import pickle
 import numpy as np
 import os
+import urllib.parse
 
 # -------------------- PAGE CONFIG --------------------
 st.set_page_config(
-    page_title="Smart Crop Recommendation",
+    page_title="Smart Crop Recommendation System",
     page_icon="🌾",
     layout="centered"
 )
 
-# -------------------- SAFE FILE LOADING --------------------
+# -------------------- SAFE FILE CHECK --------------------
 if not os.path.exists("model (5).pkl"):
-    st.error("❌ model.pkl not found. Upload it to the GitHub repository.")
+    st.error("❌ model.pkl not found. Please upload it to the GitHub repository.")
     st.stop()
 
 if not os.path.exists("minmaxscaler.pkl"):
-    st.error("❌ minmaxscaler.pkl not found. Upload it to the GitHub repository.")
+    st.error("❌ minmaxscaler.pkl not found. Please upload it to the GitHub repository.")
     st.stop()
 
 model = pickle.load(open("model (5).pkl", "rb"))
@@ -33,33 +34,31 @@ crop_dict = {
     19: "Cotton", 20: "Jute", 21: "Coffee"
 }
 
-# -------------------- CROP IMAGES (ALL CROPS) --------------------
+# -------------------- REAL IMAGE LINKS (OPTIONAL) --------------------
 crop_images = {
     "Rice": "https://images.unsplash.com/photo-1600850056064-a8b380df8395",
     "Maize": "https://images.unsplash.com/photo-1598514982205-faa48c1a2c59",
     "Chickpea": "https://images.unsplash.com/photo-1628695191732-ef20e25c1f8a",
-    "Kidney Beans": "https://images.unsplash.com/photo-1615484477778-ca3b77940c25",
-    "Pigeon Peas": "https://images.unsplash.com/photo-1632395621804-5c3c99e71c06",
-    "Moth Beans": "https://images.unsplash.com/photo-1615484477924-3e2cc74e07b6",
-    "Mung Bean": "https://images.unsplash.com/photo-1628695191732-ef20e25c1f8a",
-    "Black Gram": "https://images.unsplash.com/photo-1632395621804-5c3c99e71c06",
-    "Lentil": "https://images.unsplash.com/photo-1603048297172-c92544798d1d",
-    "Pomegranate": "https://images.unsplash.com/photo-1541345023926-55d6e0853f4f",
     "Banana": "https://images.unsplash.com/photo-1574226516831-e1dff420e37d",
     "Mango": "https://images.unsplash.com/photo-1580910051074-7e6cda05a36b",
-    "Grapes": "https://images.unsplash.com/photo-1506806732259-39c2d0268443",
-    "Watermelon": "https://images.unsplash.com/photo-1622205313162-be1d5712a43e",
-    "Muskmelon": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea",
     "Apple": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
     "Orange": "https://images.unsplash.com/photo-1547514701-42782101795e",
-    "Papaya": "https://images.unsplash.com/photo-1605027990121-cbae9c44c3bb",
-    "Coconut": "https://images.unsplash.com/photo-1590080877777-647b1f3c07e3",
-    "Cotton": "https://images.unsplash.com/photo-1602810318383-e386cc6fa0d1",
-    "Jute": "https://images.unsplash.com/photo-1623945272341-4c02b4f37f3e",
+    "Grapes": "https://images.unsplash.com/photo-1506806732259-39c2d0268443",
+    "Watermelon": "https://images.unsplash.com/photo-1622205313162-be1d5712a43e",
     "Coffee": "https://images.unsplash.com/photo-1509042239860-f550ce710b93"
 }
 
-default_crop_image = "https://images.unsplash.com/photo-1464226184884-fa280b87c399"
+# -------------------- IMAGE FALLBACK FUNCTION (KEY PART) --------------------
+def get_crop_image(crop_name):
+    """
+    Always returns a valid image.
+    Uses real image if available, otherwise generates a placeholder image.
+    """
+    if crop_name in crop_images:
+        return crop_images[crop_name]
+    else:
+        text = urllib.parse.quote(crop_name)
+        return f"https://via.placeholder.com/400x300.png?text={text}"
 
 # -------------------- HEADER --------------------
 st.markdown(
@@ -97,7 +96,7 @@ if st.button("🌱 Recommend Crop"):
     st.markdown(
         f"""
         <div style="
-            background: linear-gradient(135deg, #43cea2, #185a9d);
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
             padding: 25px;
             border-radius: 16px;
             text-align: center;
@@ -110,22 +109,24 @@ if st.button("🌱 Recommend Crop"):
         unsafe_allow_html=True
     )
 
-    # Crop Image
+    # Crop Image (GUARANTEED)
     st.image(
-        crop_images.get(crop_name, default_crop_image),
+        get_crop_image(crop_name),
         caption=f"{crop_name} Crop",
         use_column_width=True
     )
 
-# -------------------- DECORATIVE GALLERY --------------------
+# -------------------- DECORATIVE CROP GALLERY --------------------
 st.markdown("---")
 st.markdown("## 🌾 Decorative Crop Gallery")
 
 cols = st.columns(4)
-for i, crop in enumerate(crop_images.keys()):
+all_crops = list(crop_dict.values())
+
+for i, crop in enumerate(all_crops):
     with cols[i % 4]:
         st.image(
-            crop_images.get(crop, default_crop_image),
+            get_crop_image(crop),
             caption=crop,
             use_column_width=True
         )
