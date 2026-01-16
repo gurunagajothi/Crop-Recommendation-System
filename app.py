@@ -4,7 +4,7 @@ import numpy as np
 
 # Load model and scaler
 model = pickle.load(open("model (5).pkl", "rb"))
-scaler = pickle.load(open("standscaler.pkl", "rb"))  # or minmaxscaler.pkl
+scaler = pickle.load(open("minmaxscaler.pkl", "rb"))  # or minmaxscaler.pkl
 
 st.set_page_config(page_title="Crop Recommendation System", layout="centered")
 
