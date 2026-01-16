@@ -19,7 +19,7 @@ if not os.path.exists("minmaxscaler.pkl"):
     st.error("❌ minmaxscaler.pkl not found. Upload it to the GitHub repository.")
     st.stop()
 
-model = pickle.load(open("model.pkl", "rb"))
+model = pickle.load(open("model (5).pkl", "rb"))
 scaler = pickle.load(open("minmaxscaler.pkl", "rb"))
 
 # -------------------- CROP LABEL MAPPING --------------------
