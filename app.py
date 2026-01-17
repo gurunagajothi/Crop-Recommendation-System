@@ -2,64 +2,69 @@ import streamlit as st
 import pickle
 import numpy as np
 import os
-import urllib.parse
 
-# -------------------- PAGE CONFIG --------------------
+# ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="Smart Crop Recommendation System",
+    page_title="Crop Recommendation System",
     page_icon="🌾",
     layout="centered"
 )
 
-# -------------------- SAFE FILE CHECK --------------------
-if not os.path.exists("model (5).pkl"):
-    st.error("❌ model.pkl not found. Please upload it to the GitHub repository.")
+# ---------------- LOAD MODEL & SCALER ----------------
+MODEL_PATH = "model (5).pkl"
+SCALER_PATH = "minmaxscaler.pkl"   # change to minmaxscaler.pkl if needed
+
+if not os.path.exists(MODEL_PATH):
+    st.error("❌ model.pkl not found in repository")
     st.stop()
 
-if not os.path.exists("minmaxscaler.pkl"):
-    st.error("❌ minmaxscaler.pkl not found. Please upload it to the GitHub repository.")
+if not os.path.exists(SCALER_PATH):
+    st.error("❌ standscaler.pkl not found in repository")
     st.stop()
 
-model = pickle.load(open("model (5).pkl", "rb"))
-scaler = pickle.load(open("minmaxscaler.pkl", "rb"))
+model = pickle.load(open(MODEL_PATH, "rb"))
+scaler = pickle.load(open(SCALER_PATH, "rb"))
 
-# -------------------- CROP LABEL MAPPING --------------------
+# ---------------- CROP LABEL MAPPING ----------------
 crop_dict = {
-    0: "Rice", 1: "Maize", 2: "Chickpea", 3: "Kidney Beans",
-    4: "Pigeon Peas", 5: "Moth Beans", 6: "Mung Bean",
-    7: "Black Gram", 8: "Lentil", 9: "Pomegranate",
-    10: "Banana", 11: "Mango", 12: "Grapes",
-    13: "Watermelon", 14: "Muskmelon", 15: "Apple",
-    16: "Orange", 17: "Papaya", 18: "Coconut",
-    19: "Cotton", 20: "Jute", 21: "Coffee"
+    0: "Rice",
+    1: "Maize",
+    2: "Chickpea",
+    3: "Kidney Beans",
+    4: "Pigeon Peas",
+    5: "Moth Beans",
+    6: "Mung Bean",
+    7: "Black Gram",
+    8: "Lentil",
+    9: "Pomegranate",
+    10: "Banana",
+    11: "Mango",
+    12: "Grapes",
+    13: "Watermelon",
+    14: "Muskmelon",
+    15: "Apple",
+    16: "Orange",
+    17: "Papaya",
+    18: "Coconut",
+    19: "Cotton",
+    20: "Jute",
+    21: "Coffee"
 }
 
-
-
-# -------------------- IMAGE FALLBACK FUNCTION (KEY PART) --------------------
-def get_crop_image(crop_name):
-    """
-    Always returns a valid image.
-    Uses real image if available, otherwise generates a placeholder image.
-    """
-    if crop_name in crop_images:
-        return crop_images[crop_name]
-    else:
-        text = urllib.parse.quote(crop_name)
-        return f"https://via.placeholder.com/400x300.png?text={text}"
-
-# -------------------- HEADER --------------------
+# ---------------- HEADER ----------------
 st.markdown(
-    "<h1 style='text-align:center; color:green;'>🌾 Smart Crop Recommendation System</h1>",
+    "<h1 style='text-align:center; color:green;'>🌾 Crop Recommendation System</h1>",
     unsafe_allow_html=True
 )
 
 st.markdown(
-    "<p style='text-align:center;'>Enter soil and climate details to get the best crop recommendation</p>",
+    "<p style='text-align:center;'>Enter soil and climate details to get the best crop</p>",
     unsafe_allow_html=True
 )
 
-# -------------------- INPUT FORM --------------------
+st.markdown("---")
+
+# ---------------- INPUT FORM ----------------
 col1, col2 = st.columns(2)
 
 with col1:
@@ -73,56 +78,32 @@ with col2:
     ph = st.number_input("Soil pH")
     rainfall = st.number_input("Rainfall (mm)")
 
-# -------------------- PREDICTION --------------------
+# ---------------- PREDICTION ----------------
+st.markdown("")
+
 if st.button("🌱 Recommend Crop"):
-    input_data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
-    input_scaled = scaler.transform(input_data)
-    prediction = model.predict(input_scaled)
-    crop_name = crop_dict[prediction[0]]
+    try:
+        input_data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
+        input_scaled = scaler.transform(input_data)
 
-    # Result Card
-    st.markdown(
-        f"""
-        <div style="
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
-        ">
-            <h2 style="color:white;">🌾 Recommended Crop</h2>
-            <h1 style="color:white;">{crop_name}</h1>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        prediction = model.predict(input_scaled)
+        crop_name = crop_dict[int(prediction[0])]
 
-    # Crop Image (GUARANTEED)
-    st.image(
-        get_crop_image(crop_name),
-        caption=f"{crop_name} Crop",
-        use_column_width=True
-    )
+        st.success(f"✅ Recommended Crop: **{crop_name}**")
 
-# -------------------- DECORATIVE CROP GALLERY --------------------
+        # Confidence score (optional but safe)
+        if hasattr(model, "predict_proba"):
+            proba = model.predict_proba(input_scaled)
+            confidence = np.max(proba) * 100
+            st.info(f"Confidence Level: **{confidence:.2f}%**")
+
+    except Exception as e:
+        st.error("⚠️ Error during prediction")
+        st.exception(e)
+
+# ---------------- FOOTER ----------------
 st.markdown("---")
-st.markdown("## 🌾 Decorative Crop Gallery")
-
-cols = st.columns(4)
-all_crops = list(crop_dict.values())
-
-for i, crop in enumerate(all_crops):
-    with cols[i % 4]:
-        st.image(
-            get_crop_image(crop),
-            caption=crop,
-            use_column_width=True
-        )
-
-# -------------------- FOOTER --------------------
 st.markdown(
-    "<p style='text-align:center; color:gray;'>"
-    "Machine Learning • Smart Agriculture • Sustainable Farming 🌱"
-    "</p>",
+    "<p style='text-align:center; color:gray;'>Machine Learning • Smart Agriculture 🌱</p>",
     unsafe_allow_html=True
 )
