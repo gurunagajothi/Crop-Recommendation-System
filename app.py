@@ -34,19 +34,7 @@ crop_dict = {
     19: "Cotton", 20: "Jute", 21: "Coffee"
 }
 
-# -------------------- REAL IMAGE LINKS (OPTIONAL) --------------------
-crop_images = {
-    "Rice": "https://images.unsplash.com/photo-1600850056064-a8b380df8395",
-    "Maize": "https://stock.adobe.com/search?k=maize+field",
-    "Chickpea": "https://images.unsplash.com/photo-1628695191732-ef20e25c1f8a",
-    "Banana": "https://images.unsplash.com/photo-1574226516831-e1dff420e37d",
-    "Mango": "https://images.unsplash.com/photo-1580910051074-7e6cda05a36b",
-    "Apple": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
-    "Orange": "https://images.unsplash.com/photo-1547514701-42782101795e",
-    "Grapes": "https://images.unsplash.com/photo-1506806732259-39c2d0268443",
-    "Watermelon": "https://images.unsplash.com/photo-1622205313162-be1d5712a43e",
-    "Coffee": "https://images.unsplash.com/photo-1509042239860-f550ce710b93"
-}
+
 
 # -------------------- IMAGE FALLBACK FUNCTION (KEY PART) --------------------
 def get_crop_image(crop_name):
