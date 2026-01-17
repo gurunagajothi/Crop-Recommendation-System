@@ -37,7 +37,7 @@ crop_dict = {
 # -------------------- REAL IMAGE LINKS (OPTIONAL) --------------------
 crop_images = {
     "Rice": "https://images.unsplash.com/photo-1600850056064-a8b380df8395",
-    "Maize": "https://images.unsplash.com/photo-1598514982205-faa48c1a2c59",
+    "Maize": "https://stock.adobe.com/search?k=maize+field",
     "Chickpea": "https://images.unsplash.com/photo-1628695191732-ef20e25c1f8a",
     "Banana": "https://images.unsplash.com/photo-1574226516831-e1dff420e37d",
     "Mango": "https://images.unsplash.com/photo-1580910051074-7e6cda05a36b",
